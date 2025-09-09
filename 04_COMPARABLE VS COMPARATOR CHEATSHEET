@@ -1,0 +1,289 @@
+# Collections vs Comparators - Interview Cheat Sheet
+
+## 🔥 HIGH PRIORITY (Must Know for Interviews)
+
+### 1. Collections.sort() - The Most Important Method
+```java
+// Basic sorting
+Collections.sort(list);
+
+// Custom sorting
+Collections.sort(list, comparator);
+
+// Reverse sorting
+Collections.sort(list, Collections.reverseOrder());
+```
+
+### 2. Comparator Interface - Core Concept
+```java
+// Lambda expression
+Comparator<Person> byAge = (p1, p2) -> Integer.compare(p1.getAge(), p2.getAge());
+
+// Method reference
+Comparator<Person> byName = Comparator.comparing(Person::getName);
+
+// Chaining
+Comparator<Person> byAgeThenName = Comparator
+    .comparing(Person::getAge)
+    .thenComparing(Person::getName);
+```
+
+### 3. Comparable vs Comparator
+```java
+// Comparable - Natural ordering (implemented by class)
+class Person implements Comparable<Person> {
+    public int compareTo(Person other) {
+        return this.name.compareTo(other.name);
+    }
+}
+
+// Comparator - External ordering
+Comparator<Person> byAge = (p1, p2) -> Integer.compare(p1.getAge(), p2.getAge());
+```
+
+### 4. Collections.reverse() vs Collections.reverseOrder()
+```java
+// reverse() - modifies original list
+Collections.reverse(list);
+
+// reverseOrder() - returns comparator
+Collections.sort(list, Collections.reverseOrder());
+```
+
+### 5. Collections.binarySearch()
+```java
+// Must be sorted first!
+Collections.sort(list);
+int index = Collections.binarySearch(list, target);
+// Returns index if found, -(insertion point) - 1 if not found
+```
+
+---
+
+## ⚡ MEDIUM PRIORITY (Frequently Asked)
+
+### 6. Collections.shuffle()
+```java
+Collections.shuffle(list);
+Collections.shuffle(list, new Random(42)); // Reproducible
+```
+
+### 7. Collections.max() and Collections.min()
+```java
+Integer max = Collections.max(list);
+Integer min = Collections.min(list);
+
+// With custom comparator
+String longest = Collections.max(list, Comparator.comparing(String::length));
+```
+
+### 8. Collections.frequency()
+```java
+int count = Collections.frequency(list, "apple");
+```
+
+### 9. Collections.copy() and Collections.fill()
+```java
+Collections.copy(destination, source); // destination must be same size or larger
+Collections.fill(list, "FILL");
+```
+
+### 10. Collections.synchronizedList()
+```java
+List<String> syncList = Collections.synchronizedList(list);
+synchronized(syncList) {
+    syncList.add("item");
+}
+```
+
+---
+
+## 📚 LOW PRIORITY (Good to Know)
+
+### 11. Collections.rotate()
+```java
+Collections.rotate(list, 2); // Rotate right by 2 positions
+```
+
+### 12. Collections.swap()
+```java
+Collections.swap(list, 0, 3); // Swap elements at indices 0 and 3
+```
+
+### 13. Collections.addAll()
+```java
+Collections.addAll(list, "A", "B", "C");
+```
+
+### 14. Collections.disjoint()
+```java
+boolean noCommon = Collections.disjoint(list1, list2);
+```
+
+### 15. Collections.nCopies()
+```java
+List<String> copies = Collections.nCopies(3, "Hello");
+```
+
+---
+
+## 🎯 Interview Scenarios
+
+### Scenario 1: Sort by Multiple Criteria
+```java
+// Sort by salary (desc), then by name (asc)
+Collections.sort(employees, Comparator
+    .comparing(Employee::getSalary, Comparator.reverseOrder())
+    .thenComparing(Employee::getName)
+);
+```
+
+### Scenario 2: Null-Safe Sorting
+```java
+// Nulls last
+Collections.sort(list, Comparator.nullsLast(Comparator.naturalOrder()));
+
+// Nulls first
+Collections.sort(list, Comparator.nullsFirst(Comparator.naturalOrder()));
+```
+
+### Scenario 3: Custom Sorting Logic
+```java
+// Sort by string length, then alphabetically
+Collections.sort(words, Comparator
+    .comparing(String::length)
+    .thenComparing(Comparator.naturalOrder())
+);
+```
+
+---
+
+## 💡 Common Interview Questions & Answers
+
+### Q1: What's the difference between Comparable and Comparator?
+**A:** 
+- **Comparable**: Implemented by the class, provides natural ordering
+- **Comparator**: External class, provides custom ordering
+- **Use Comparable** for single natural ordering
+- **Use Comparator** for multiple sorting criteria or when you can't modify the class
+
+### Q2: How do you sort in descending order?
+**A:**
+```java
+// Method 1: Collections.reverseOrder()
+Collections.sort(list, Collections.reverseOrder());
+
+// Method 2: Lambda with reversed()
+Collections.sort(list, Comparator.naturalOrder().reversed());
+
+// Method 3: Custom comparator
+Collections.sort(list, (a, b) -> b.compareTo(a));
+```
+
+### Q3: What's the time complexity of Collections.sort()?
+**A:** O(n log n) - uses Timsort algorithm
+
+### Q4: What happens with binarySearch on unsorted list?
+**A:** Undefined behavior - results are unpredictable. Always sort first!
+
+### Q5: How do you handle null values in sorting?
+**A:**
+```java
+// Nulls first
+Collections.sort(list, Comparator.nullsFirst(Comparator.naturalOrder()));
+
+// Nulls last
+Collections.sort(list, Comparator.nullsLast(Comparator.naturalOrder()));
+```
+
+---
+
+## 🚀 Performance Quick Reference
+
+| Method | Time Complexity | Space Complexity |
+|--------|----------------|------------------|
+| Collections.sort() | O(n log n) | O(1) |
+| Collections.binarySearch() | O(log n) | O(1) |
+| Collections.reverse() | O(n) | O(1) |
+| Collections.shuffle() | O(n) | O(1) |
+| Collections.max/min() | O(n) | O(1) |
+
+---
+
+## 🎯 Quick Decision Guide
+
+### When to Use What:
+
+| Need | Use | Why |
+|------|-----|-----|
+| Sort list | `Collections.sort()` | Most common operation |
+| Custom sorting | `Comparator.comparing()` | Clean, readable |
+| Multiple criteria | `Comparator.thenComparing()` | Chain comparators |
+| Reverse order | `Collections.reverseOrder()` | Built-in reverse |
+| Binary search | `Collections.binarySearch()` | O(log n) search |
+| Find max/min | `Collections.max/min()` | O(n) operation |
+| Shuffle | `Collections.shuffle()` | Randomize order |
+| Count occurrences | `Collections.frequency()` | Count specific elements |
+
+---
+
+## 🏆 Best Practices
+
+### ✅ Do:
+1. **Use Comparator.comparing()** for simple cases
+2. **Chain comparators** with thenComparing()
+3. **Handle null values** explicitly
+4. **Use method references** when possible
+5. **Sort before binarySearch()**
+
+### ❌ Don't:
+1. **Use binarySearch()** on unsorted lists
+2. **Ignore null handling** in comparators
+3. **Create unnecessary objects** in comparators
+4. **Use raw types** with generics
+5. **Modify original list** unless necessary
+
+---
+
+## 🔧 Common Patterns
+
+### Pattern 1: Sort by Multiple Fields
+```java
+Collections.sort(list, Comparator
+    .comparing(Item::getPriority)
+    .thenComparing(Item::getDate)
+    .thenComparing(Item::getName)
+);
+```
+
+### Pattern 2: Custom Comparison Logic
+```java
+Collections.sort(list, (a, b) -> {
+    int result = Integer.compare(a.getAge(), b.getAge());
+    if (result == 0) {
+        result = a.getName().compareTo(b.getName());
+    }
+    return result;
+});
+```
+
+### Pattern 3: Null-Safe Comparison
+```java
+Collections.sort(list, Comparator
+    .comparing(Item::getName, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER))
+);
+```
+
+---
+
+## 📝 Quick Tips for Interviews
+
+1. **Always mention time complexity** when discussing sorting
+2. **Show knowledge of both Comparable and Comparator**
+3. **Demonstrate chaining comparators** for multiple criteria
+4. **Handle edge cases** like null values
+5. **Use modern Java features** (lambdas, method references)
+6. **Explain when to use each method**
+7. **Show understanding of performance implications**
+
+This cheat sheet covers the most important Collections and Comparator concepts for Java interviews, organized by priority and frequency of questions.
